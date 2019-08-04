@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KingdomsSharedCode", "KingdomsSharedCode\KingdomsSharedCode.shproj", "{1774FBC0-C4C5-4FCE-979A-5542C86907C4}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		KingdomsSharedCode\KingdomsSharedCode.projitems*{1774fbc0-c4c5-4fce-979a-5542c86907c4}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ABD2ACDB-6EC4-4E04-9D78-812B162A8B23}
+	EndGlobalSection
+EndGlobal
