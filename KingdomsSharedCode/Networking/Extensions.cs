@@ -33,8 +33,6 @@ namespace KingdomsSharedCode.Networking
                     writer.Write(message.secret);
                     writer.Write(message.body);
                 }
-
-                Console.WriteLine("WRITING "+message);
             }
             catch (SocketException e)
             {
