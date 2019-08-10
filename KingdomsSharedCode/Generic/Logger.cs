@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace KingdomsSharedCode.Generic
 {
@@ -15,11 +17,53 @@ namespace KingdomsSharedCode.Generic
         static Dictionary<LEVEL, ConsoleColor> colors = new Dictionary<LEVEL, ConsoleColor>()
         {
             {LEVEL.TRACE, ConsoleColor.Magenta },
-            {LEVEL.DEBUG, ConsoleColor.White },
+            {LEVEL.DEBUG, ConsoleColor.Gray },
             {LEVEL.INFO, ConsoleColor.White },
             {LEVEL.WARNING, ConsoleColor.Yellow },
             {LEVEL.ERROR, ConsoleColor.Red }
         };
+        static int flushEvery = 1000;
+
+        static bool outputToFile = false;
+        static bool outputToConsole = true;
+
+        static string logFilePath = @"logs/{0}.log";
+        static FileStream logFileStream = null;
+        static string programName;
+        static Timer flushTimer;
+
+        static Logger()
+        {
+            Initialize(Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName));
+        }
+
+        public static void Initialize(string programName)
+        {
+            Logger.programName = programName;
+
+            if (outputToFile)
+            {
+                Directory.CreateDirectory(
+                Path.GetDirectoryName(
+                        logFilePath
+                    )
+                );
+                if (flushTimer != null) flushTimer.Dispose();
+                if (logFileStream != null) logFileStream.Dispose();
+                if (File.Exists(logFilePath)) File.Delete(logFilePath);
+
+                logFileStream = new FileStream(string.Format(logFilePath, programName), FileMode.Create, FileAccess.Write, FileShare.Read);
+
+                flushTimer = new Timer(
+                    e =>
+                    {
+                        logFileStream.Flush();
+                    },
+                    null,
+                    TimeSpan.Zero,
+                    TimeSpan.FromMilliseconds(flushEvery));
+            }
+        }
 
         public static void SetLevel(LEVEL level)
         {
@@ -31,7 +75,7 @@ namespace KingdomsSharedCode.Generic
         public static void Info(params string[] msgs) { LogMessage(LEVEL.INFO, msgs); }
         public static void Warn(params string[] msgs) { LogMessage(LEVEL.WARNING, msgs); }
         public static void Error(params string[] msgs) { LogMessage(LEVEL.ERROR, msgs); }
-        public static void Throw(Exception e)
+        public static void Fatal(Exception e)
         {
             LogMessage(LEVEL.ERROR, new string[1] { "================== FATAL ==================" });
             LogMessage(LEVEL.ERROR, e);
@@ -48,17 +92,16 @@ namespace KingdomsSharedCode.Generic
 
             string caller = "---";
 
-            // Formatting the "X=>Y" file/method pattern
 #if DEBUG
             StackFrame sf = new StackFrame(2, true);
-            string file = sf.GetFileName();
+            string file = sf.GetMethod().DeclaringType.Name;
             string method = sf.GetMethod().Name;
             try
             {
-                caller =
-                    file.Substring(0, Math.Min(file.Length, 10)).PadRight(10)
-                    + "=>"
-                    + method.Substring(0, Math.Min(method.Length, 14)).PadRight(14);
+                caller = string.Format("{0}   {1}",
+                    file.Substring(0, Math.Min(file.Length, 8)).PadRight(8),
+                    method.Substring(0, Math.Min(method.Length, 14)).PadRight(14)
+                );
             }
             catch (NullReferenceException)
             {
@@ -68,8 +111,21 @@ namespace KingdomsSharedCode.Generic
 
             // Debug line formatting
             string line = "{0} [{1}] [{2}]:{3}";
-            string.Format(line, DateTime.Now.ToString(culture.DateTimeFormat.LongTimePattern), msgLevel.ToString(), caller, string.Join(" ", msgs));
+            line = string.Format(line, DateTime.Now.ToString(culture.DateTimeFormat.LongTimePattern), msgLevel.ToString(), caller, string.Join(" ", msgs));
 
+            if (outputToConsole)
+            {
+                Console.ForegroundColor = colors[msgLevel];
+                Console.WriteLine(line);
+            }
+
+            if (outputToFile)
+            {
+                using (StreamWriter sw = new StreamWriter(logFileStream, Encoding.UTF8, 1024, leaveOpen:true))
+                {
+                    sw.WriteLine(line);
+                }
+            }
         }
     }
 }

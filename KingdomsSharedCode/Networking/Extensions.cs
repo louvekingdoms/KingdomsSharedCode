@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
+using static KingdomsSharedCode.Generic.Logger;
+
 namespace KingdomsSharedCode.Networking
 {
     static class Extensions
@@ -23,6 +25,8 @@ namespace KingdomsSharedCode.Networking
                 return;
             }
 
+            Trace("WRITING: " + message);
+
             try
             {
                 using (var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true))
@@ -36,14 +40,14 @@ namespace KingdomsSharedCode.Networking
             }
             catch (SocketException e)
             {
-                Console.WriteLine("Socket error while communicating, closing the stream");
-                Console.WriteLine(e.ToString());
+                Error("Socket error while communicating, closing the stream");
+                Error(e.ToString());
                 stream.Close();
             }
             catch (IOException e)
             {
-                Console.WriteLine("IO error while communicating, closing the stream");
-                Console.WriteLine(e.ToString());
+                Error("IO error while communicating, closing the stream");
+                Error(e.ToString());
                 stream.Close();
             }
         }

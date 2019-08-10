@@ -10,8 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Generic\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generic\Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\SimpleJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Networking\Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Networking\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Networking\Message.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)JSON\" />
   </ItemGroup>
 </Project>
