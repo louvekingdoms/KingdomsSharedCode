@@ -31,6 +31,7 @@ namespace KingdomsSharedCode.Generic
         static FileStream logFileStream = null;
         static string programName;
         static Timer flushTimer;
+        static Action<object> logFunction = (Action<object>)Console.WriteLine;
 
         static Logger()
         {
@@ -70,6 +71,11 @@ namespace KingdomsSharedCode.Generic
             Logger.level = level;
         }
 
+        public static void SetConsoleFunction(Action<object> function)
+        {
+            logFunction = function;
+        }
+        
         public static void Trace(params string[] msgs) { LogMessage(LEVEL.TRACE, msgs); }
         public static void Debug(params string[] msgs) { LogMessage(LEVEL.DEBUG, msgs); }
         public static void Info(params string[] msgs) { LogMessage(LEVEL.INFO, msgs); }
@@ -116,7 +122,7 @@ namespace KingdomsSharedCode.Generic
             if (outputToConsole)
             {
                 Console.ForegroundColor = colors[msgLevel];
-                Console.WriteLine(line);
+                logFunction(line);
             }
 
             if (outputToFile)
