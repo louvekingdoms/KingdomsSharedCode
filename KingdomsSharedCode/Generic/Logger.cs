@@ -38,9 +38,11 @@ namespace KingdomsSharedCode.Generic
             Initialize(Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName));
         }
 
-        public static void Initialize(string programName)
+        public static void Initialize(string programName, bool outputToFile=false, bool outputToConsole=true)
         {
             Logger.programName = programName;
+            Logger.outputToFile = outputToFile;
+            Logger.outputToConsole = outputToConsole;
 
             if (outputToFile)
             {
