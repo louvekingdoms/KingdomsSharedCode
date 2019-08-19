@@ -8,13 +8,13 @@ using System.Threading;
 
 namespace KingdomsSharedCode.Generic
 {
-    static class Logger
+    public class Logger
     {
         public enum LEVEL { TRACE, DEBUG, WARNING, INFO, ERROR};
 
-        static LEVEL level;
-        static CultureInfo culture = new CultureInfo("fr-FR");
-        static Dictionary<LEVEL, ConsoleColor> colors = new Dictionary<LEVEL, ConsoleColor>()
+        LEVEL level;
+        CultureInfo culture = new CultureInfo("fr-FR");
+        Dictionary<LEVEL, ConsoleColor> colors = new Dictionary<LEVEL, ConsoleColor>()
         {
             {LEVEL.TRACE, ConsoleColor.Magenta },
             {LEVEL.DEBUG, ConsoleColor.Gray },
@@ -22,27 +22,29 @@ namespace KingdomsSharedCode.Generic
             {LEVEL.WARNING, ConsoleColor.Yellow },
             {LEVEL.ERROR, ConsoleColor.Red }
         };
-        static int flushEvery = 1000;
+        int flushEvery = 1000;
 
-        static bool outputToFile = false;
-        static bool outputToConsole = true;
+        bool outputToFile = false;
+        bool outputToConsole = true;
 
-        static string logFilePath = @"logs/{0}.log";
-        static FileStream logFileStream = null;
-        static string programName;
-        static Timer flushTimer;
-        static Action<object> logFunction = (Action<object>)Console.WriteLine;
+        string logFilePath = @"logs/{0}.log";
+        FileStream logFileStream = null;
+        string programName;
+        Timer flushTimer;
+        Action<object> logFunction = (Action<object>)Console.WriteLine;
 
-        static Logger()
+        public Logger(string programName=null, bool outputToFile = false, bool outputToConsole = true)
         {
-            Initialize(Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName));
+            if (programName == null) programName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
+
+            Initialize(programName, outputToFile, outputToConsole);
         }
 
-        public static void Initialize(string programName, bool outputToFile=false, bool outputToConsole=true)
+        void Initialize(string programName, bool outputToFile=false, bool outputToConsole=true)
         {
-            Logger.programName = programName;
-            Logger.outputToFile = outputToFile;
-            Logger.outputToConsole = outputToConsole;
+            this.programName = programName;
+            this.outputToFile = outputToFile;
+            this.outputToConsole = outputToConsole;
 
             if (outputToFile)
             {
@@ -68,22 +70,22 @@ namespace KingdomsSharedCode.Generic
             }
         }
 
-        public static void SetLevel(LEVEL level)
+        public void SetLevel(LEVEL level)
         {
-            Logger.level = level;
+            this.level = level;
         }
 
-        public static void SetConsoleFunction(Action<object> function)
+        public void SetConsoleFunction(Action<object> function)
         {
-            logFunction = function;
+            this.logFunction = function;
         }
         
-        public static void Trace(params string[] msgs) { LogMessage(LEVEL.TRACE, msgs); }
-        public static void Debug(params string[] msgs) { LogMessage(LEVEL.DEBUG, msgs); }
-        public static void Info(params string[] msgs) { LogMessage(LEVEL.INFO, msgs); }
-        public static void Warn(params string[] msgs) { LogMessage(LEVEL.WARNING, msgs); }
-        public static void Error(params string[] msgs) { LogMessage(LEVEL.ERROR, msgs); }
-        public static void Fatal(Exception e)
+        public void Trace(params string[] msgs) { LogMessage(LEVEL.TRACE, msgs); }
+        public void Debug(params string[] msgs) { LogMessage(LEVEL.DEBUG, msgs); }
+        public void Info(params string[] msgs) { LogMessage(LEVEL.INFO, msgs); }
+        public void Warn(params string[] msgs) { LogMessage(LEVEL.WARNING, msgs); }
+        public void Error(params string[] msgs) { LogMessage(LEVEL.ERROR, msgs); }
+        public void Fatal(Exception e)
         {
             LogMessage(LEVEL.ERROR, new string[1] { "================== FATAL ==================" });
             LogMessage(LEVEL.ERROR, e);
@@ -91,7 +93,7 @@ namespace KingdomsSharedCode.Generic
             Environment.Exit(1);
         }
 
-        private static void LogMessage(LEVEL msgLevel, params object[] msgs)
+        void LogMessage(LEVEL msgLevel, params object[] msgs)
         {
             if (msgLevel < level)
             {

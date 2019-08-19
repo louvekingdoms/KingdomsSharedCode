@@ -6,8 +6,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-using static KingdomsSharedCode.Generic.Logger;
-
 namespace KingdomsSharedCode.Networking
 {
     static class Extensions
@@ -19,36 +17,19 @@ namespace KingdomsSharedCode.Networking
 
         public static void Write(this NetworkStream stream, Message message)
         {
+            // Can throw SocketException and IOException
             if (!stream.CanWrite)
             {
-                Console.Write("Stream cannot be written to, skipping " + message);
-                return;
+                throw new Exception("Expected to be able to write into the network stream, but could not (canWrite is false)");
             }
-
-            Trace("WRITING: " + message);
-
-            try
+            using (var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true))
             {
-                using (var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true))
-                {
-                    writer.Write(message.controller);
-                    writer.Write(message.beat);
-                    writer.Write(message.session);
-                    writer.Write(message.secret);
-                    writer.Write(message.body);
-                }
-            }
-            catch (SocketException e)
-            {
-                Error("Socket error while communicating, closing the stream");
-                Error(e.ToString());
-                stream.Close();
-            }
-            catch (IOException e)
-            {
-                Error("IO error while communicating, closing the stream");
-                Error(e.ToString());
-                stream.Close();
+                writer.Write(message.controller);
+                writer.Write(message.beat);
+                writer.Write(message.sumAtBeat);
+                writer.Write(message.session);
+                writer.Write(message.secret);
+                writer.Write(message.body);
             }
         }
     }
