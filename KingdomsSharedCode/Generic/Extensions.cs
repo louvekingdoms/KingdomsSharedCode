@@ -23,5 +23,15 @@ namespace KingdomsSharedCode.Generic
         {
             return (byte)(val % (byte.MaxValue+1));
         }
+
+        public static string ToSumString(this byte[] sum)
+        {
+            var sb = new StringBuilder();
+            foreach(var byt in sum)
+            {
+                sb.Append(byt.ToString("X2"));
+            }
+            return sb.ToString();
+        }
     }
 }
