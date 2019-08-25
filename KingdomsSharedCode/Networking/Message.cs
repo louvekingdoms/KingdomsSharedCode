@@ -14,6 +14,7 @@ namespace KingdomsSharedCode.Networking
         public byte controller;
         public ushort beat;
         public uint session;
+        public ushort owner;
         public uint secret;
         public string body = string.Empty;
 
@@ -27,6 +28,7 @@ namespace KingdomsSharedCode.Networking
                     controller = reader.ReadByte();
                     beat = reader.ReadUInt16();
                     session = reader.ReadUInt32();
+                    owner = reader.ReadUInt16();
                     secret = reader.ReadUInt32();
                     body = reader.ReadString();
                 }
@@ -43,6 +45,7 @@ namespace KingdomsSharedCode.Networking
                 memoryWriter.Write(mes.controller);
                 memoryWriter.Write(mes.beat);
                 memoryWriter.Write(mes.session);
+                memoryWriter.Write(mes.owner);
                 memoryWriter.Write(mes.secret);
                 memoryWriter.Write(mes.body);
 
@@ -58,13 +61,14 @@ namespace KingdomsSharedCode.Networking
 
         public override string ToString()
         {
-            return string.Format("[{0}:{5} BEAT:{1} SES:{2} SEC:{3}] [{4}]",
+            return string.Format("(Player.{6}) [{0}:{5} BEAT:{1} SES:{2} SEC:{3}] [{4}]",
                 ((Controller)controller).ToString(),
                 beat.ToString("X4"),
                 session.ToString("X8"),
                 secret.ToString("X8"),
                 body,
-                size.ToString()
+                size.ToString(),
+                owner.ToString("00000")
             );
         }
 
