@@ -80,11 +80,11 @@ namespace KingdomsSharedCode.Generic
             this.logFunction = function;
         }
         
-        public void Trace(params string[] msgs) { LogMessage(LEVEL.TRACE, msgs); }
-        public void Debug(params string[] msgs) { LogMessage(LEVEL.DEBUG, msgs); }
-        public void Info(params string[] msgs) { LogMessage(LEVEL.INFO, msgs); }
-        public void Warn(params string[] msgs) { LogMessage(LEVEL.WARNING, msgs); }
-        public void Error(params string[] msgs) { LogMessage(LEVEL.ERROR, msgs); }
+        public void Trace(params object[] msgs) { LogMessage(LEVEL.TRACE, msgs); }
+        public void Debug(params object[] msgs) { LogMessage(LEVEL.DEBUG, msgs); }
+        public void Info(params object[] msgs) { LogMessage(LEVEL.INFO, msgs); }
+        public void Warn(params object[] msgs) { LogMessage(LEVEL.WARNING, msgs); }
+        public void Error(params object[] msgs) { LogMessage(LEVEL.ERROR, msgs); }
         public void Fatal(Exception e)
         {
             LogMessage(LEVEL.ERROR, new string[1] { "================== FATAL ==================" });
